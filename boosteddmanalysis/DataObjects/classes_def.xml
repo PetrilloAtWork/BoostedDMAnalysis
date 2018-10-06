@@ -1,0 +1,33 @@
+<!--
+  Brief:  Dictionary selection for Boosted Dark Matter data objects
+  Author: Gianluca Petrillo (petrillo@slac.stanford.edu)
+  Date:   October 5, 2018
+  -->
+
+
+<lcgdict>
+  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+  <!-- bdm::SmearedMCParticle -->
+  
+    <!--   class -->
+  <class name="bdm::SmearedMCParticle" ClassVersion="10" >
+   <version ClassVersion="10" checksum="4037081950"/>
+  </class>
+  
+    <!-- art pointers and wrappers -->
+      <!-- data product collection (bdm::SmearedMCParticle) -->
+  <class name="art::Ptr<bdm::SmearedMCParticle>" />
+  <class name="std::vector<bdm::SmearedMCParticle>" />
+  <class name="art::Wrapper<std::vector<bdm::SmearedMCParticle>>" />
+      
+    <!-- associations and wrappers (bdm::SmearedMCParticle <==> simb::MCParticle) -->
+  <class name="art::Assns<bdm::SmearedMCParticle, simb::MCParticle, void>" />
+  <class name="art::Assns<simb::MCParticle, bdm::SmearedMCParticle, void>" />
+  <class name="std::pair<art::Ptr<bdm::SmearedMCParticle>, art::Ptr<simb::MCParticle>>" />
+  <class name="art::Wrapper<art::Assns<bdm::SmearedMCParticle, simb::MCParticle, void>>" />
+  <class name="std::pair<art::Ptr<simb::MCParticle>, art::Ptr<bdm::SmearedMCParticle>>" />
+  <class name="art::Wrapper<art::Assns<simb::MCParticle, bdm::SmearedMCParticle, void>>" />
+  
+  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+  
+</lcgdict>

@@ -52,6 +52,12 @@ namespace bdm {
     using Momentum_t = geo::Vector_t; ///< Type to represent momenta.
     using PDGID_t = int; ///< Type of the particle ID.
     
+    using Flags_t = unsigned int; ///< Type of flags mask.
+    
+    /// Flag: is the particle valid at all?
+    static constexpr Flags_t flValid = 1 << 0;
+    
+    
     /// 4-momentum
     using FourMomentum_t
       = ROOT::Math::LorentzVector<ROOT::Math::Cartesian3D<double>>;
@@ -71,13 +77,15 @@ namespace bdm {
       * @param time time of appearance
       * @param startPosition initial position [cm]
       * @param endPosition final position [cm]
+      * @param flags flags (see `flags()`)
       * 
       * The particle is initialized with the specified values.
       */
     SmearedMCParticle(
       PDGID_t id,
       Momentum_t momentum, double energy,
-      double time, Position_t startPosition, Position_t endPosition
+      double time, Position_t startPosition, Position_t endPosition,
+      Flags_t flags = defaultFlags()
       );
     
     
@@ -135,6 +143,32 @@ namespace bdm {
     // --- END access to data --------------------------------------------------
     
     
+    /// @{
+    
+    
+    // --- BEGIN access to flags -----------------------------------------------
+    /// @name Access to flags
+    /// @{
+    
+    /// Returns the full set of flags.
+    Flags_t flags() const { return fFlags; }
+    
+    /// Returns whether this particle is valid at all.
+    bool isValid() const { return flags() & flValid; }
+    
+    /// Returns whether this particle is not valid.
+    bool isInvalid() const { return !isValid(); }
+    
+    /// Returns the default set of flags for a reconstructed particle.
+    static constexpr Flags_t defaultFlags() { return flValid; }
+    
+    /// Returns a flag set for an invalid particle.
+    static constexpr Flags_t invalidParticleFlags() { return 0U; }
+    
+    /// @}
+    // --- END access to flags -------------------------------------------------
+    
+    
     // --- BEGIN printing data -------------------------------------------------
     /// @{
     /// @name Printing data
@@ -186,11 +220,14 @@ namespace bdm {
     
     double     fEnergy = 0.0;   ///< Reconstructed energy of the particle [GeV].
     Momentum_t fMomentum; ///< Reconstructed momentum of the particle [GeV/c].
-    double     fTime = 0.0;           ///< Reconstructed creation time [ns].
+    double     fTime = 0.0; ///< Reconstructed creation time [ns].
     Position_t fStartingVertex; ///< Reconstructed starting position [cm].
     Position_t fEndVertex;      ///< Reconstructed ending position [cm].
     
     PDGID_t fPDGID = InvalidParticleID; ///< Particle ID in PDG standard.
+    
+    /// Flags associated to this particle.
+    Flags_t fFlags = invalidParticleFlags();
     
   }; // class SmearedMCParticle
   
@@ -223,11 +260,22 @@ void bdm::SmearedMCParticle::dump(
   if (verbosity >= 1) {
     out << firstIndent
       << "particle: ";
+    if (isInvalid()) {
+      out << "invalid";
+      return;
+    }
     auto const* pPDGinfo = particleInfo();
     if (pPDGinfo) out << pPDGinfo->GetName() << " (ID=" << particleId() << ")";
     else          out << "ID " << particleId();
   }
-  else out << firstIndent << "ID=" << particleId(); // <== verbosity: 0
+  else {
+    out << firstIndent;
+    if (isInvalid()) {
+      out << "invalid";
+      return;
+    }
+    out << "ID=" << particleId(); // <== verbosity: 0
+  }
   
   if (verbosity >= 1) out << " starting";
   if (verbosity >= 3) out << " on " << time() << " ns";
@@ -237,7 +285,9 @@ void bdm::SmearedMCParticle::dump(
   // verbosity: 0
   out << "; E=" << energy() << " GeV, cp=" << momentum() << " GeV/c";
   
-} // lar::example::CheatTrack::dump()
+  // would print flags here, but there is none yet besides the "valid" one
+  
+} // bdm::SmearedMCParticle::dump()
 
 //------------------------------------------------------------------------------
 

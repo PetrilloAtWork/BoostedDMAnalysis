@@ -11,7 +11,7 @@
   
     <!--   class -->
   <class name="bdm::SmearedMCParticle" ClassVersion="10" >
-   <version ClassVersion="10" checksum="4037081950"/>
+   <version ClassVersion="10" checksum="532383039"/>
   </class>
   
     <!-- art pointers and wrappers -->
@@ -27,6 +27,16 @@
   <class name="art::Wrapper<art::Assns<bdm::SmearedMCParticle, simb::MCParticle, void>>" />
   <class name="std::pair<art::Ptr<simb::MCParticle>, art::Ptr<bdm::SmearedMCParticle>>" />
   <class name="art::Wrapper<art::Assns<simb::MCParticle, bdm::SmearedMCParticle, void>>" />
+  
+  
+  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+  <!-- vectors of pointers to simb::MCParticle -->
+  <class name="std::vector<art::Ptr<simb::MCParticle>>" />
+  <class name="art::Wrapper<std::vector<art::Ptr<simb::MCParticle>>>" />
+  
+  <class name="art::PtrVector<simb::MCParticle>" />
+  <class name="art::Wrapper<art::PtrVector<simb::MCParticle>>" />
+  
   
   <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
   

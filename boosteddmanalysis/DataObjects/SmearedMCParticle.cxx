@@ -19,7 +19,8 @@ bdm::SmearedMCParticle::SmearedMCParticle(
   double energy,
   double time,
   Position_t startPosition,
-  Position_t endPosition
+  Position_t endPosition,
+  Flags_t flags
   )
   : fEnergy(energy)
   , fMomentum(momentum)
@@ -27,6 +28,7 @@ bdm::SmearedMCParticle::SmearedMCParticle(
   , fStartingVertex(startPosition)
   , fEndVertex(endPosition)
   , fPDGID(id)
+  , fFlags(flags)
   {}
 
 

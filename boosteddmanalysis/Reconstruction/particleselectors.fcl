@@ -1,0 +1,30 @@
+#
+# File:    particleselectors.fcl
+# Brief:   Configuration of particle selection algorithms.
+# Author:  Gianluca Petrillo (petrillo@slac.stanford.edu)
+# Date:    20181006
+# Version: 1.0
+# 
+# Description:
+# Predefined configurations are provided for
+# `bdm::SelectFinalState` algorithm:
+# - standard_select_final_state: default configuration
+#     (more than enough, since there is nothing to configure...)
+# 
+#
+#
+# Changes:
+# 20181006 (petrillo@slac.stanford.edu) [v1.0]
+#   original version
+#
+#
+
+################################################################################
+standard_select_final_state: {
+  
+  keepNeutrons: true
+  
+} # standard_select_final_state
+
+
+################################################################################

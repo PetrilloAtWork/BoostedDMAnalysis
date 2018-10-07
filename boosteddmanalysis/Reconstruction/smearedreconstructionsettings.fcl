@@ -1,0 +1,56 @@
+#
+# File:    smearedreconstructionsettings.fcl
+# Brief:   Configuration of parametric particle reconstruction algorithms.
+# Author:  Gianluca Petrillo (petrillo@slac.stanford.edu)
+# Date:    20181006
+# Version: 1.0
+# 
+# Description:
+# Predefined configurations are provided for
+# `bdm::SmearedReconstructionAlgorithm` algorithm:
+# - smeared_reconstruction_dune10kt: configuration for DUNE far detector single
+#     phase module (10kt)
+# 
+#
+# Changes:
+# 20181006 (petrillo@slac.stanford.edu) [v1.0]
+#   original version
+#
+#
+
+BEGIN_PROLOG
+
+################################################################################
+smeared_reconstruction_dune10kt: {
+  
+  particleParameters: [
+    
+    {
+      # protons and antiprotons
+      id:             [ -2212, 2212 ]
+      direction:      0.1 # rad
+      efficiency:     0.9
+    },
+    
+    {
+      # muons and antimuons
+      id:             [ -13, 13 ]
+      direction:      0.05 # rad
+      efficiency:     0.95
+    },
+    
+    {
+      # all particles not matching the other settings
+      id:             [ 0 ]
+      efficiency:     0.0
+    }
+    
+    
+  ]
+  
+} # smeared_reconstruction_dune10kt
+
+
+################################################################################
+
+END_PROLOG

@@ -1,0 +1,9 @@
+/**
+
+@defgroup TotallyCheatTracks TotallyCheatTracks
+@brief Defines a new data product and produces it and its associations.
+@ingroup larexamples_Algorithms
+
+@copydoc TotallyCheatTracks_README
+
+ */

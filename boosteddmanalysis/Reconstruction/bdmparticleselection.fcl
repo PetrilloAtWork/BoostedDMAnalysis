@@ -1,0 +1,69 @@
+#
+# File:    bdmparticleselection.fcl
+# Brief:   Runs Boosted Dark Matter particle selection algorithms.
+# Author:  Gianluca Petrillo (petrillo@slac.stanford.edu)
+# Date:    20181006
+# Version: 1.0
+# 
+# Description:
+# The module TotallyCheatTracker is used to "reconstruct" the simulated
+# particles from the input.
+# 
+# Input:
+# - collection of simb::MCParticle
+#
+# Output:
+# - collection of art pointers to simb::MCParticle
+#
+#
+# Changes:
+# 20171226 (petrillo@fnal.gov) [v1.0]
+#   original version
+#
+#
+
+#include "particleselectors.fcl"
+
+#-------------------------------------------------------------------------------
+process_name: BDMselect
+
+#-------------------------------------------------------------------------------
+# no source specified; use -s option from command line
+
+#-------------------------------------------------------------------------------
+physics: {
+  
+  producers: {
+  
+    selector: {
+      module_type: ParticleSelector
+      
+      particles: "largeant"
+      
+      selector: @local::standard_select_final_state
+      
+      
+    } # selector
+    
+  } # producers
+  
+  reco: [ selector ]
+  stream: [ output ]
+  
+  trigger_paths: [ reco ]
+  end_paths: [ stream ]
+  
+} # physics
+
+
+#-------------------------------------------------------------------------------
+outputs: {
+  output: {
+    module_type: RootOutput
+    
+    fileName: "%ifb_%tc_%p.root"
+    
+  } # output
+} # outputs
+
+#-------------------------------------------------------------------------------

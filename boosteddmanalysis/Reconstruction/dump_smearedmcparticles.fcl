@@ -1,0 +1,83 @@
+#
+# File:    dump_smearedmcparticles.fcl
+# Brief:   Dumps `bdm::SmearedMCParticle` data product into a file.
+# Author:  Gianluca Petrillo (petrillo@slac.stanford.edu)
+# Date:    20181006
+# Version: 1.0
+# 
+# Input:
+# - collection of bdm::SmearedMCParticle
+#
+# Output:
+# - text file
+#
+#
+# Changes:
+# 20171226 (petrillo@fnal.gov) [v1.0]
+#   original version
+#
+#
+
+process_name: DumpMCParticles
+
+services: {
+  
+  message: {
+  #   debugModules: [ "*" ]
+    destinations: {
+      
+      # grab all the "DumpSmearedMCParticles" messages
+      # and put them in DumpSmearedMCParticles.log
+      DumpSmearedMCParticles: {
+        append: false
+        categories: {
+          DumpSmearedMCParticles: { limit: -1 }
+          default: { limit: 0 }
+        }
+        filename: "DumpSmearedMCParticles.log"
+        threshold: "INFO"
+        type: "file"
+      } # DumpSmearedMCParticles
+      
+      LogStandardOut: {
+        categories: {
+          DumpSmearedMCParticles: { limit: 0 }
+          default: {}
+        }
+        threshold: "WARNING"
+        type: "cout"
+      } # LogStandardOut
+      
+    } # destinations
+  } # message
+} # services
+
+
+source: {
+  module_type: RootInput
+} # source
+
+
+physics: {
+  producers:{}
+  filters:  {}
+  analyzers: {
+    dumpsmearedmcparticles: {
+      
+      module_type:  DumpSmearedMCParticles
+      
+      # output category ("OutputCategory" by default), useful for filtering (see above)
+      OutputCategory: "DumpSmearedMCParticles"
+      
+      # specify the label of the simb::MCParticle data product (or producer)
+      InputParticles: "smear"
+      
+    } # dumpsmearedmcparticles
+  } # analyzers
+  
+  dumpers: [ dumpsmearedmcparticles ]
+  
+  trigger_paths: []
+  end_paths:     [ dumpers ]
+  
+} # physics

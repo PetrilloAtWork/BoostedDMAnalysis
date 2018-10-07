@@ -1,0 +1,32 @@
+
+art_make(
+  LIB_LIBRARIES
+    boosteddmanalysis_DataObjects
+    nusimdata_SimulationBase
+    ${CANVAS}
+    ${MF_MESSAGELOGGER}
+    ${FHICLCPP}
+    ${CETLIB}
+    ${CETLIB_EXCEPT}
+    ${ROOT_PHYSICS}
+    ${ROOT_GENVECTOR}
+    ${ROOT_CORE}
+    ${CLHEP}
+  MODULE_LIBRARIES
+    boosteddmanalysis_Reconstruction
+    nutools_RandomUtils_NuRandomService_service
+    nusimdata_SimulationBase
+    ${ART_FRAMEWORK_SERVICES_OPTIONAL_RANDOMNUMBERGENERATOR_SERVICE}
+    ${ART_FRAMEWORK_SERVICES_OPTIONAL}
+    ${ART_FRAMEWORK_SERVICES_REGISTRY}
+    ${ART_FRAMEWORK_CORE}
+    ${ART_FRAMEWORK_PRINCIPAL}
+    ${CANVAS}
+    ${MF_MESSAGELOGGER}
+    ${FHICLCPP}
+    ${CLHEP}
+  )
+
+install_headers()
+install_fhicl()
+install_source()

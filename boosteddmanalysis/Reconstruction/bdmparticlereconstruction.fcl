@@ -1,0 +1,73 @@
+#
+# File:    bdmparticlereconstruction.fcl
+# Brief:   Runs Boosted Dark Matter particle reconstruction algorithms.
+# Author:  Gianluca Petrillo (petrillo@slac.stanford.edu)
+# Date:    20181006
+# Version: 1.0
+# 
+# Input:
+# - collection of simb::MCParticle
+#
+# Output:
+# - collection of bdm::SmearedMCParticle
+#
+#
+# Changes:
+# 20171226 (petrillo@fnal.gov) [v1.0]
+#   original version
+#
+#
+
+#include "seedservice.fcl"
+#include "smearedreconstructionsettings.fcl"
+
+#-------------------------------------------------------------------------------
+process_name: RecoSmear
+
+#-------------------------------------------------------------------------------
+# no source specified; use -s option from command line
+
+services: {
+  
+  RandomNumberGenerator: {}
+  NuRandomService:       @local::per_event_NuRandomService
+  
+} # services
+
+
+#-------------------------------------------------------------------------------
+physics: {
+  
+  producers: {
+  
+    smear: {
+      module_type: SmearedReconstruction
+      
+      particles: "largeant"
+      
+      reconstruction: @local::smeared_reconstruction_dune10kt
+      
+    } # smear
+    
+  } # producers
+  
+  reco: [ smear ]
+  stream: [ output ]
+  
+  trigger_paths: [ reco ]
+  end_paths: [ stream ]
+  
+} # physics
+
+
+#-------------------------------------------------------------------------------
+outputs: {
+  output: {
+    module_type: RootOutput
+    
+    fileName: "%ifb_%tc_%p.root"
+    
+  } # output
+} # outputs
+
+#-------------------------------------------------------------------------------

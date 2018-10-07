@@ -96,8 +96,12 @@ namespace bdm {
         /// Probability of reconstructing the particle (uniform)
         double fRecoEff = 1.0;
         
-        /// Smearing of reconstructed direction [rad].
+        /// Transversal smearing of reconstructed direction
+        /// [fraction of momentum].
         double fDirectionSmearingAngle = 0.0;
+        
+        /// Smearing of reconstructed energy [fraction].
+        double fEnergySmearingFraction = 0.0;
         
         /// Prints into the specified stream the content of these parameters.
         template <typename Stream>
@@ -179,7 +183,7 @@ namespace bdm {
       
       fhicl::Atom<double> direction {
         Name("direction"),
-        Comment("Gaussian smearing of the direction with this angle [rad]"),
+        Comment("transversal displacement of reconstructed momentum [fraction]"),
         0.0
         };
       
@@ -339,7 +343,8 @@ void bdm::SmearedReconstructionAlg::ReconstructionParameters::ParticleParameters
 ) const {
   out << firstIndent
     << "reconstruction efficiency: " << fRecoEff
-    << ";  direction: +/- " << fDirectionSmearingAngle << " rad";
+    << ";  direction: x" << fDirectionSmearingAngle
+    << ";  energy: +/- x" << fEnergySmearingFraction;
   
 } // bdm::...::ReconstructionParameters::ParticleParameters_t::dump()
 

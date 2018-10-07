@@ -10,18 +10,66 @@
 // algorithm header
 #include "boosteddmanalysis/Reconstruction/SmearedReconstructionAlg.h"
 
+// LArSoft libraries
+#include "larcoreobj/SimpleTypesAndConstants/PhysicalConstants.h" // util::pi()
+#include "larcoreobj/SimpleTypesAndConstants/geo_vectors.h" // geo::Zaxis()
+
 // framework libraries
 #include "messagefacility/MessageLogger/MessageLogger.h"
 
 // CLHEP library
 #include "CLHEP/Random/RandFlat.h"
+#include "CLHEP/Random/RandGauss.h"
 #include "CLHEP/Random/RandomEngine.h" // CLHEP::HepRandomEngine
+
+// ROOT libraries
+#include "Math/GenVector/RotationY.h"
+#include "Math/GenVector/RotationZ.h"
 
 // C++ standard library
 #include <iterator> // std::back_inserter()
 #include <utility> // std::move()
 #include <stdexcept> // std::out_of_range
+#include <cmath> // std::abs()
 
+
+//------------------------------------------------------------------------------
+namespace {
+  
+  /// Returns a random value distributed within a truncated Gaussian between
+  /// `min` and `max`.
+  double cappedGaus(CLHEP::RandGauss& gaus, double min, double max)
+    {
+      while (true) {
+        double const value = gaus.fire();
+        if ((value >= min) && (value <= max)) return value;
+      } // while
+    }
+  
+  
+  geo::Vector_t smearDirection
+    (geo::Vector_t const& v, double dtheta, double dphi)
+    {
+      //
+      // The idea is to add a displacement to the original vector;
+      // the displacement must be added orthogonally to the original vector,
+      // and it is generated on a plane: its modulus is proportional to the
+      // smearing parameter, while the direction on the plane is uniformly
+      // random.
+      // 
+      // The displacement vector is rotated to be orthogonal to the original
+      // one, and then added. Given that the azimuthal angle is random, the
+      // details of the direction of the displacement rotation around the
+      // original vector are not relevant.
+      //
+      double const dr = dtheta* v.R();
+      geo::Vector_t dv { dr * std::cos(dphi), dr * std::sin(dphi), 0.0 };
+      auto const rotation
+        = ROOT::Math::RotationZ(v.Phi()) * ROOT::Math::RotationY(v.Theta());
+      return v + rotation * dv;
+    }
+  
+} // local namespace
 
 
 //------------------------------------------------------------------------------
@@ -125,13 +173,14 @@ bdm::SmearedReconstructionAlg::reconstruct
   reconstructed.reserve(particles.size());
   
   auto rndUniform = makeRandomGen<CLHEP::RandFlat>();
+  auto rndGaus = makeRandomGen<CLHEP::RandGauss>();
 
   for (simb::MCParticle const* particle: particles) {
     
     // retrieve the reconstruction parameters for this type of particle
     auto const& recoParams = fParameters[particle->PdgCode()];
     
-    
+    //--------------------------------------------------------------------------
     unsigned int nPoints = particle->NumberTrajectoryPoints();
     
     bdm::SmearedMCParticle::Position_t startPosition {
@@ -151,15 +200,33 @@ bdm::SmearedReconstructionAlg::reconstruct
     bdm::SmearedMCParticle::Momentum_t momentum
       { particle->Px(), particle->Py(), particle->Pz() };
     
-    double energy = particle->E();
+    double const energy = particle->E();
     
+    //--------------------------------------------------------------------------
     // TODO apply smearing and thresholds
     bool bCouldReconstruct = rndUniform.fire() < recoParams.fRecoEff;
     
+    double smearedEnergy = energy *
+      (1.0 + recoParams.fEnergySmearingFraction * cappedGaus(rndGaus, -1.0, 3.0));
+    
+    bdm::SmearedMCParticle::Momentum_t smearedMomentum;
+    if (recoParams.fDirectionSmearingAngle == 0.0)
+      smearedMomentum = momentum;
+    else {
+      double const phi = rndUniform() * 2.0 * util::pi() - util::pi();
+      double const dtheta
+        = recoParams.fDirectionSmearingAngle
+        * std::abs(cappedGaus(rndGaus, -3.0, +3.0))
+        * momentum.R()
+        ;
+      smearedMomentum = smearDirection(momentum, dtheta, phi);
+    } // if momentum smearing
+    
+    //--------------------------------------------------------------------------
     reconstructed.emplace_back(
       particle->PdgCode(), // id
       momentum,
-      energy,
+      smearedEnergy,
       time,
       startPosition,
       endPosition,
@@ -229,6 +296,7 @@ bdm::SmearedReconstructionAlg::fillParameters
     ReconstructionParameters::ParticleParameters_t partParams;
     partParams.fRecoEff = particleConfig.efficiency();
     partParams.fDirectionSmearingAngle = particleConfig.direction();
+    partParams.fEnergySmearingFraction = particleConfig.energy();
     
     parameters.registerParams(std::move(partParams), particleConfig.id());
     
@@ -251,6 +319,8 @@ bdm::SmearedReconstructionAlg::fillParameters
       = particleConfig.get<double>("efficiency", 1.0);
     partParams.fDirectionSmearingAngle
       = particleConfig.get<double>("direction", 0.0);
+    partParams.fEnergySmearingFraction
+      = particleConfig.get<double>("energy", 0.0);
     
     parameters.registerParams
       (std::move(partParams), particleConfig.get<std::vector<PDGID_t>>("id"));

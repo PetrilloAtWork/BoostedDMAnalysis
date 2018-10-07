@@ -3,7 +3,7 @@ art_make(
   LIB_LIBRARIES
     lardataobj_RecoBase
     ${ROOT_EG} # TDatabasePDG
-    ${ROOT_GENVECTORS}
+    ${ROOT_GENVECTOR}
     ${ROOT_CORE}
   DICT_LIBRARIES
     nusimdata_SimulationBase

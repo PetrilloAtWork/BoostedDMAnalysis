@@ -69,7 +69,7 @@ physics: {
       # output category ("OutputCategory" by default), useful for filtering (see above)
       OutputCategory: "DumpSmearedMCParticles"
       
-      # specify the label of the simb::MCParticle data product (or producer)
+      # specify the label of the bdm::SmearedMCParticle data product (or producer)
       InputParticles: "smear"
       
     } # dumpsmearedmcparticles

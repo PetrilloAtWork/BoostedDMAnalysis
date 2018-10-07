@@ -28,8 +28,6 @@ bdm::SelectFinalState::Selection_t bdm::SelectFinalState::select
   for (std::size_t index = 0U; index < nParticles; ++index) {
     auto const& particle = particles[index];
     
-    std::cout << "Particle #" << index << " mother: " << particle.Mother() << std::endl;
-    
     // TODO
     
     // filter neutrons out
@@ -37,7 +35,7 @@ bdm::SelectFinalState::Selection_t bdm::SelectFinalState::select
       continue;
     
     // exclude the particles that are not "primary" (i.e. not generated)
-    if (particle.Mother() < 0) continue;
+    if (particle.Mother() > 0) continue;
     
     selected.push_back(index);
     

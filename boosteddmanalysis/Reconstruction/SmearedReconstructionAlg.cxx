@@ -36,6 +36,11 @@
 //------------------------------------------------------------------------------
 namespace {
   
+  /// Returns the square of the specified value.
+  template <typename T>
+  T sqr(T value) { return value * value; }
+  
+  
   /// Returns a random value distributed within a truncated Gaussian between
   /// `min` and `max`.
   double cappedGaus(CLHEP::RandGauss& gaus, double min, double max)
@@ -62,11 +67,16 @@ namespace {
       // details of the direction of the displacement rotation around the
       // original vector are not relevant.
       //
-      double const dr = dtheta* v.R();
+      // In the end, we restore the modulus of the vector.
+      //
+      if (dtheta == 0.0) return v; // actually, no smearing
+      double const vR = v.R();
+      double const dr = dtheta* vR;
       geo::Vector_t dv { dr * std::cos(dphi), dr * std::sin(dphi), 0.0 };
       auto const rotation
         = ROOT::Math::RotationZ(v.Phi()) * ROOT::Math::RotationY(v.Theta());
-      return v + rotation * dv;
+      double const rescale = std::sqrt(1.0 / (1.0 + sqr(dr/vR)));
+      return rescale * (v + rotation * dv);
     }
   
 } // local namespace

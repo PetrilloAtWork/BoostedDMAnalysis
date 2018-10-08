@@ -217,7 +217,6 @@ bdm::SmearedReconstructionAlg::reconstruct
       double const dtheta
         = recoParams.fDirectionSmearingAngle
         * std::abs(cappedGaus(rndGaus, -3.0, +3.0))
-        * momentum.R()
         ;
       smearedMomentum = smearDirection(momentum, dtheta, phi);
     } // if momentum smearing

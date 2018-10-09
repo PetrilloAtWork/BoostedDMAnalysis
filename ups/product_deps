@@ -40,6 +40,7 @@ qualifier  larsoft   notes
 e17:debug  e17:debug
 e17:opt    e17:opt
 e17:prof   e17:prof
+c2:prof    c2:prof
 end_qualifier_list
 
 # Preserve tabs and formatting in emacs and vi / vim:

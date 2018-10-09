@@ -189,7 +189,7 @@ bdm::SmearedReconstructionAlg::reconstruct
     
     // retrieve the reconstruction parameters for this type of particle
     auto const& recoParams = fParameters[particle->PdgCode()];
-    
+    // std::cout << "TrackID: " << particle->TrackId() << ", PDGCode: " << particle->PdgCode() << std::endl;
     //--------------------------------------------------------------------------
     unsigned int nPoints = particle->NumberTrajectoryPoints();
     
@@ -211,14 +211,21 @@ bdm::SmearedReconstructionAlg::reconstruct
       { particle->Px(), particle->Py(), particle->Pz() };
     
     double const energy = particle->E();
+    double const kenergy = energy - particle->Mass();
     
     //--------------------------------------------------------------------------
     // TODO apply smearing and thresholds
     bool bCouldReconstruct = rndUniform.fire() < recoParams.fRecoEff;
+    // std::cout << " => passed reconstruction efficiency (" << recoParams.fRecoEff << ")? " << bCouldReconstruct << std::endl;
     
-    double smearedEnergy = energy *
+    double smearedKEnergy = kenergy *
       (1.0 + recoParams.fEnergySmearingFraction * cappedGaus(rndGaus, -1.0, 3.0));
+
+    bCouldReconstruct &= smearedKEnergy > recoParams.fKEThreshold;
+    // std::cout << " => passed detection threshold (" << smearedKEnergy << " vs. " << recoParams.fKEThreshold << ")? " << bCouldReconstruct << std::endl;
     
+    double smearedEnergy = smearedKEnergy + particle->Mass();
+
     bdm::SmearedMCParticle::Momentum_t smearedMomentum;
     if (recoParams.fDirectionSmearingAngle == 0.0)
       smearedMomentum = momentum;
@@ -306,6 +313,7 @@ bdm::SmearedReconstructionAlg::fillParameters
     partParams.fRecoEff = particleConfig.efficiency();
     partParams.fDirectionSmearingAngle = particleConfig.direction();
     partParams.fEnergySmearingFraction = particleConfig.energy();
+    partParams.fKEThreshold = particleConfig.threshold();
     
     parameters.registerParams(std::move(partParams), particleConfig.id());
     
@@ -330,6 +338,9 @@ bdm::SmearedReconstructionAlg::fillParameters
       = particleConfig.get<double>("direction", 0.0);
     partParams.fEnergySmearingFraction
       = particleConfig.get<double>("energy", 0.0);
+    partParams.fKEThreshold
+      = particleConfig.get<double>("threshold", 0.0);
+     
     
     parameters.registerParams
       (std::move(partParams), particleConfig.get<std::vector<PDGID_t>>("id"));

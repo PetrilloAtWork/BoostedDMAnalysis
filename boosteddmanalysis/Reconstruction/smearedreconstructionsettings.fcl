@@ -28,17 +28,46 @@ smeared_reconstruction_dune10kt: {
     {
       # protons and antiprotons
       id:             [ -2212, 2212 ]
-      direction:      0.05 # transversal fraction
-      energy:         0.3 # fraction
-      efficiency:     0.9
+      direction:      0.0873 # transversal fraction
+      energy:         0. # fraction
+      efficiency:     1.
+      threshold:      0.05 # detection threshold by KE, unit in GeV
     },
-    
+
+    {
+      # neutrons
+      id:             [ 2112 ]
+      direction:      0.0873 # transversal fraction
+      energy:         0. # fraction
+      efficiency:     1.
+      threshold:      0.05 # detection threshold by KE, unit in GeV
+    },
+
     {
       # muons and antimuons
       id:             [ -13, 13 ]
-      direction:      0.025 # transversal fractionrad
-      energy:         0.3 # fraction
-      efficiency:     0.95
+      direction:      0.0175 # transversal fraction [rad]
+      energy:         0. # fraction
+      efficiency:     1.
+      threshold:      0.03
+    },
+
+    {
+      # charged pion
+      id:             [ -211, 211 ]
+      direction:      0.0175
+      energy:         0.
+      efficiency:     1.
+      threshold:      0.1
+    },
+    
+    {
+      # electron and photons
+      id:             [ -11, 11, 22 ]
+      direction:      0.0175
+      energy:         0.
+      efficiency:     1.
+      threshold:      0.03
     },
     
     {

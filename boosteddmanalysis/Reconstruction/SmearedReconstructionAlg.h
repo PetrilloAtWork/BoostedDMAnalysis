@@ -103,6 +103,9 @@ namespace bdm {
         /// Smearing of reconstructed energy [fraction].
         double fEnergySmearingFraction = 0.0;
         
+        /// Detection threshold by kinetic energy [GeV].
+        double fKEThreshold = 0.0;
+        
         /// Prints into the specified stream the content of these parameters.
         template <typename Stream>
         void dump(
@@ -186,7 +189,18 @@ namespace bdm {
         Comment("transversal displacement of reconstructed momentum [fraction]"),
         0.0
         };
-      
+
+      fhicl::Atom<double> energy {
+        Name("energy"),
+        Comment("energy resolution [fraction]"),
+        0.0
+      };
+      fhicl::Atom<double> threshold {
+        Name("threshold"),
+        Comment("detection threshold in kinetic energy [GeV]"),
+        0.0
+      };
+        
     }; // struct ParticleParameterConfig
     
     

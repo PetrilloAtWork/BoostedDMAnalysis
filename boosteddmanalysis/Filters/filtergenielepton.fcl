@@ -3,7 +3,7 @@ BEGIN_PROLOG
 ################################################################################
 standard_select_ncinteractions: {
   
-  MCTruthLabel: GenieGen
+  MCTruthLabel: generator
   LeptonPdgCode: [ -12, 12, -14, 14 ] 
   
 } # standard_select_final_state

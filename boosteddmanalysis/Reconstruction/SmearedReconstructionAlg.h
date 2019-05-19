@@ -100,8 +100,15 @@ namespace bdm {
         /// [fraction of momentum].
         double fDirectionSmearingAngle = 0.0;
         
-        /// Smearing of reconstructed energy [fraction].
-        double fEnergySmearingFraction = 0.0;
+        /// 
+        /// Smearing of reconstructed energy [fraction].  sigma^2 = ( fEnergySmearingConstant )^2 + ( fEnergySmearingCoeffSqrtE / Sqrt( E ) )^2
+        double fEnergySmearingConstant = 0.0;
+        double fEnergySmearingCoeffSqrtE = 0.0;
+
+        /// In some cases, such as protons, the energy resolution for a low energy case has only the constant term
+        /// See an example in Table 3.3 of DUNE CDR physics volume
+        double fEnergySmearingLowEDef = 0.0;
+        double fLowEnergySmearingConstant = 0.0;
         
         /// Detection threshold by kinetic energy [GeV].
         double fKEThreshold = 0.0;
@@ -190,11 +197,27 @@ namespace bdm {
         0.0
         };
 
-      fhicl::Atom<double> energy {
-        Name("energy"),
-        Comment("energy resolution [fraction]"),
+      fhicl::Atom<double> energy_constant {
+        Name("energy_constant"),
+        Comment("the constant term of the energy resolution [fraction]: sigma^2 = energy_constant^2 + ( energy_coeff_sqrtE / sqrtE )^2"),
         0.0
       };
+      fhicl::Atom<double> energy_coeff_sqrtE {
+        Name("energy_coeff_sqrtE"),
+        Comment("the coefficient of the sqrt(E) term of the energy resolution [fraction]: sigma^2 = energy_constant^2 + ( energy_coeff_sqrtE / sqrtE )^2"),
+        0.0
+      };
+      fhicl::Atom<double> low_energy_def {
+        Name("low_energy_def"),
+        Comment("the definition of the low energy region for different resolution"),
+        0.0
+      };
+      fhicl::Atom<double> low_energy_constant {
+        Name("low_energy_constant"),
+        Comment("the constant term of the energy resolution [fraction] in the low energy region"),
+        0.0
+      };
+
       fhicl::Atom<double> threshold {
         Name("threshold"),
         Comment("detection threshold in kinetic energy [GeV]"),
@@ -358,7 +381,9 @@ void bdm::SmearedReconstructionAlg::ReconstructionParameters::ParticleParameters
   out << firstIndent
     << "reconstruction efficiency: " << fRecoEff
     << ";  direction: x" << fDirectionSmearingAngle
-    << ";  energy: +/- x" << fEnergySmearingFraction;
+    << ";  energy: +/- x" << fEnergySmearingConstant 
+    << " convoluted with " << fEnergySmearingCoeffSqrtE << "/sqrt(E); if momentum < "
+    << fEnergySmearingLowEDef << ", energy: +/- x" << fLowEnergySmearingConstant;
   
 } // bdm::...::ReconstructionParameters::ParticleParameters_t::dump()
 

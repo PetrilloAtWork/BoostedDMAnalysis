@@ -211,21 +211,30 @@ bdm::SmearedReconstructionAlg::reconstruct
       { particle->Px(), particle->Py(), particle->Pz() };
     
     double const energy = particle->E();
-    double const kenergy = energy - particle->Mass();
+    double const mass = particle->Mass();
+    double const modulusP = particle->P();
     
     //--------------------------------------------------------------------------
-    // TODO apply smearing and thresholds
+    
     bool bCouldReconstruct = rndUniform.fire() < recoParams.fRecoEff;
     // std::cout << " => passed reconstruction efficiency (" << recoParams.fRecoEff << ")? " << bCouldReconstruct << std::endl;
     
-    double smearedKEnergy = kenergy *
-      (1.0 + recoParams.fEnergySmearingFraction * cappedGaus(rndGaus, -1.0, 3.0));
+    // Smear the energy
+    double thisESmearing = 0.0;
+    if ( modulusP > recoParams.fEnergySmearingLowEDef ) {
+      thisESmearing = std::sqrt( sqr( recoParams.fEnergySmearingConstant ) 
+        + sqr( recoParams.fEnergySmearingCoeffSqrtE )/energy );
+    } else {
+      thisESmearing = recoParams.fLowEnergySmearingConstant;
+    }
+    double smearedEnergy = energy *
+      std::max( mass, 1.0 + thisESmearing * cappedGaus(rndGaus, -3.0, 3.0) );
 
+    double smearedKEnergy = smearedEnergy - mass;
     bCouldReconstruct &= smearedKEnergy > recoParams.fKEThreshold;
     // std::cout << " => passed detection threshold (" << smearedKEnergy << " vs. " << recoParams.fKEThreshold << ")? " << bCouldReconstruct << std::endl;
     
-    double smearedEnergy = smearedKEnergy + particle->Mass();
-
+    
     bdm::SmearedMCParticle::Momentum_t smearedMomentum;
     if (recoParams.fDirectionSmearingAngle == 0.0)
       smearedMomentum = momentum;
@@ -336,8 +345,14 @@ bdm::SmearedReconstructionAlg::fillParameters
       = particleConfig.get<double>("efficiency", 1.0);
     partParams.fDirectionSmearingAngle
       = particleConfig.get<double>("direction", 0.0);
-    partParams.fEnergySmearingFraction
-      = particleConfig.get<double>("energy", 0.0);
+    partParams.fEnergySmearingConstant
+      = particleConfig.get<double>("energy_constant", 0.0);
+    partParams.fEnergySmearingCoeffSqrtE
+      = particleConfig.get<double>("energy_coeff_sqrtE", 0.0);
+    partParams.fEnergySmearingCoeffSqrtE
+      = particleConfig.get<double>("low_energy_def", 0.0);
+    partParams.fLowEnergySmearingConstant
+      = particleConfig.get<double>("low_energy_constant", 0.0);
     partParams.fKEThreshold
       = particleConfig.get<double>("threshold", 0.0);
      

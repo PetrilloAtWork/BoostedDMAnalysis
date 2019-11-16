@@ -1,0 +1,15 @@
+BEGIN_PROLOG
+
+################################################################################
+standard_select_hadronicallytaudecay: {
+  
+  MCTruthLabel: generator
+  VetoMode: true
+  SpecifiedParticlePdgCode: [ -11, 11, -13, 13 ] 
+  
+} # standard_select_final_state
+
+
+################################################################################
+
+END_PROLOG

@@ -102,7 +102,175 @@ smeared_reconstruction_dune10kt: {
   
 } # smeared_reconstruction_dune10kt
 
+################################################################################
+smeared_optimistic_reconstruction_dune10kt: {
+  
+  particleParameters: [
+    
+    {
+      # protons and antiprotons
+      id:                   [ -2212, 2212 ]
+      direction:            0.0873 # transversal fraction
+      energy_constant:      0.05 # fraction
+      energy_coeff_sqrtE:   0.3
+      low_energy_def:       0.4 # unit in momentum, GeV/c
+      low_energy_constant:  0.1
+      efficiency:           1.
+      threshold:            0.02 # detection threshold by KE, unit in GeV
+    },
+
+    {
+      # neutrons
+      id:                   [ 2112 ]
+      direction:            0.0873 # transversal fraction
+      energy_constant:      0. # fraction
+      energy_coeff_sqrtE:   0.4
+      low_energy_def:       0.0 # unit in momentum
+      low_energy_constant:  0.0
+      efficiency:           0.9
+      threshold:            0.02 # detection threshold by KE, unit in GeV
+    },
+
+    {
+      # muons and antimuons
+      id:                   [ -13, 13 ]
+      direction:            0.0175 # transversal fraction [rad]
+      energy_constant:      0.05 # fraction
+      energy_coeff_sqrtE:   0.0
+      low_energy_def:       0.0 # unit in momentum
+      low_energy_constant:  0.0
+      efficiency:           1.
+      threshold:            0.03
+    },
+
+    {
+      # charged pion
+      id:                   [ -211, 211 ]
+      direction:            0.0175
+      energy_constant:      0.05 # fraction
+      energy_coeff_sqrtE:   0.
+      low_energy_def:       0. # unit in momentum
+      low_energy_constant:  0.
+      efficiency:           1.
+      threshold:            0.03
+    },
+    
+    {
+      # electron and photons
+      id:                   [ -11, 11, 22 ]
+      direction:            0.0175
+      energy_constant:      0.02 # fraction
+      energy_coeff_sqrtE:   0.15
+      low_energy_def:       0.0 # unit in momentum
+      low_energy_constant:  0.0
+      efficiency:           1.
+      threshold:            0.03
+    },
+    
+    {
+      # all particles not matching the other settings
+      id:                   [ 0 ]
+      direction:            0.0873
+      energy_constant:      0.05 # fraction
+      energy_coeff_sqrtE:   0.3
+      low_energy_def:       0.0 # unit in momentum
+      low_energy_constant:  0.0
+      efficiency:           1.0
+      threshold:            0.03
+    }
+    
+    
+  ]
+  
+} # smeared_optimistic_reconstruction_dune10kt
 
 ################################################################################
+
+smeared_reconstruction_table_dune10kt: {
+
+  particleParameters: [
+    
+    {
+      # protons and antiprotons
+      id:                   [ -2212, 2212 ]
+      direction:            0.0873 # transversal fraction
+      efficiency:           1.
+      threshold:            0.05 # detection threshold by KE, unit in GeV
+      trueKE:               [ 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0 ] # true KE in GeV
+      aveDepE:              [ 0.09660806, 0.1860406, 0.2684124, 0.3452713, 0.41770196, 0.48465893, 0.5547117, 0.6211173, 0.68480945, 0.75283015 ] # average deposited energy in GeV
+      stdDepE:              [ 0.011001549, 0.02789868, 0.04603336, 0.06263159, 0.07752249, 0.09050645, 0.09999706, 0.108157344, 0.11501284, 0.121532865 ] # standard deviation of deposited energy in GeV
+    },
+
+    {
+      # neutrons
+      id:                   [ 2112 ]
+      direction:            0.0873 # transversal fraction
+      efficiency:           0.9
+      threshold:            0.05 # detection threshold by KE, unit in GeV
+      trueKE:               [ 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0 ] # true KE in GeV
+      aveDepE:              [ 0.04037071, 0.09801552, 0.15940857, 0.22271438, 0.2876341, 0.3518327, 0.41943097, 0.4864394, 0.55463636, 0.62512046 ] # average deposited energy in GeV
+      stdDepE:              [ 0.019341495, 0.037035525, 0.051880065, 0.06444384, 0.07381842, 0.08214198, 0.09033301, 0.097298235, 0.10211236, 0.10992324 ] # standard deviation of deposited energy in GeV
+    },
+
+    {
+      # muons and antimuons
+      id:                   [ -13, 13 ]
+      direction:            0.0175 # transversal fraction [rad]
+      efficiency:           1.
+      threshold:            0.03
+      trueKE:               [ 0.5 ]
+      aveDepE:              [ 0.5 ]
+      stdDepE:              [ 0.005 ]
+
+    },
+
+    {
+      # charged pion plus
+      id:                   [ 211 ]
+      direction:            0.0175
+      efficiency:           1.
+      threshold:            0.1
+      trueKE:               [ 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0 ] # true KE in GeV
+      aveDepE:              [ 0.1384516, 0.23012066, 0.31509474, 0.39918554, 0.47494552, 0.54864293, 0.6207039, 0.6904462, 0.7621931, 0.8352161 ] # average deposited energy in GeV
+      stdDepE:              [ 0.02117833, 0.03488521, 0.045432, 0.05561013, 0.06765003, 0.077845745, 0.08688313, 0.09610139, 0.101863146, 0.109020084 ] # standard deviation of deposited energy in GeV
+    },
+    
+    {
+      # charged pion minus
+      id:                   [ -211 ]
+      direction:            0.0175
+      efficiency:           1.
+      threshold:            0.1
+      trueKE:               [ 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0 ] # true KE in GeV
+      aveDepE:              [ 0.13380614, 0.20424919, 0.27454245, 0.347546, 0.4216018, 0.49347255, 0.5652333, 0.638401, 0.7093303, 0.7775532 ] # average deposited energy in GeV
+      stdDepE:              [ 0.027716061, 0.04440601, 0.05719346, 0.06751692, 0.0773797, 0.08486001, 0.09249532, 0.098143846, 0.10666436, 0.111576185 ] # standard deviation of deposited energy in GeV
+    },
+    
+    {
+      # electron and photons
+      id:                   [ -11, 11, 22 ]
+      direction:            0.0175
+      efficiency:           1.
+      threshold:            0.03
+      trueKE:               [ 0.1, 0.3, 0.5, 0.7, 1.0, 2.0 ] # true KE in GeV
+      aveDepE:              [ 0.0835318, 0.2497107, 0.41604713, 0.5820995, 0.8314445, 1.6628219 ] # average deposited energy in GeV
+      stdDepE:              [ 0.0023037908, 0.0047018123, 0.0066771046, 0.009329914, 0.012144617, 0.018695867 ] # standard deviation of deposited energy in GeV
+    },
+    
+    {
+      # all particles not matching the other settings
+      id:                   [ 0 ]
+      direction:            0.0873
+      efficiency:           1.0
+      threshold:            0.05
+      trueKE:               [ 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0 ] # true KE in GeV
+      aveDepE:              [ 0.09660806, 0.1860406, 0.2684124, 0.3452713, 0.41770196, 0.48465893, 0.5547117, 0.6211173, 0.68480945, 0.75283015 ] # average deposited energy in GeV
+      stdDepE:              [ 0.011001549, 0.02789868, 0.04603336, 0.06263159, 0.07752249, 0.09050645, 0.09999706, 0.108157344, 0.11501284, 0.121532865 ] # standard deviation of deposited energy in GeV
+    }
+    
+    
+  ]
+
+} # smeared_reconstruction_table_dune10kt
 
 END_PROLOG

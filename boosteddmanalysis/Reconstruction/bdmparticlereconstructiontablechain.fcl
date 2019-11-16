@@ -1,0 +1,157 @@
+#
+# File:    bdmparticlereconstructionchain.fcl
+# Brief:   Runs Boosted Dark Matter particle selection and reconstruction algorithms.
+# Author:  Gianluca Petrillo (petrillo@slac.stanford.edu)
+# Date:    20181006
+# Version: 1.0
+# 
+# This is an example of "full chain" where generated particles are selected
+# and "reconstructed".
+# 
+# Input:
+# - collection of simb::MCParticle
+#
+# Output:
+# - collection of bdm::SmearedMCParticle
+# - text file with the content of the original MCParticle list
+# - text file with the content of the reconstructed SmearedMCParticle
+#
+#
+# Changes:
+# 20181006 (petrillo@fnal.gov) [v1.0]
+#   original version
+#
+#
+
+#include "seedservice.fcl"
+#include "particleselectors.fcl"
+#include "smearedreconstructionsettings.fcl"
+
+#-------------------------------------------------------------------------------
+process_name: RecoSmear
+
+#-------------------------------------------------------------------------------
+# no source specified; use -s option from command line
+
+services: {
+  
+  message: {
+  #   debugModules: [ "*" ]
+    destinations: {
+      
+      # grab all the "DumpSmearedMCParticles" messages
+      # and put them in DumpSmearedMCParticles.log
+      DumpSmearedMCParticles: {
+        append: false
+        categories: {
+          DumpSmearedMCParticles: { limit: -1 }
+          default: { limit: 0 }
+        }
+        filename: "DumpSmearedMCParticles.log"
+        threshold: "INFO"
+        type: "file"
+      } # DumpSmearedMCParticles
+      
+      # grab all the "DumpMCParticles" messages
+      # and put them in DumpMCParticles.log
+      DumpMCParticles: {
+        append: false
+        categories: {
+          DumpMCParticles: { limit: -1 }
+          default: { limit: 0 }
+        }
+        filename: "DumpMCParticles.log"
+        threshold: "INFO"
+        type: "file"
+      } # DumpMCParticles
+      
+      LogStandardOut: {
+        categories: {
+          DumpMCParticles:        { limit: 0 }
+          DumpSmearedMCParticles: { limit: 0 }
+          default:                { limit: -1 }
+        }
+        threshold: "INFO"
+        type: "cout"
+      } # LogStandardOut
+      
+    } # destinations
+  } # message
+  
+  RandomNumberGenerator: {}
+  NuRandomService:       @local::per_event_NuRandomService
+  
+} # services
+
+
+#-------------------------------------------------------------------------------
+physics: {
+  
+  producers: {
+  
+    selector: {
+      module_type: ParticleSelector
+      
+      particles: "largeant"
+      
+      selector: @local::standard_select_final_state
+      
+      
+    } # selector
+    
+    smear: {
+      module_type: SmearedReconstruction
+      
+      particles: "selector"
+      useTable: true
+      
+      reconstruction: @local::smeared_reconstruction_table_dune10kt
+      
+    } # smear
+    
+  } # producers
+  
+  analyzers: {
+    
+    dumpmcparticles: {
+      
+      module_type:  DumpMCParticles
+      
+      OutputCategory: "DumpMCParticles"
+      InputParticles: "largeant"
+      
+    } # dumpsmearedmcparticles
+    
+    dumpsmearedmcparticles: {
+      
+      module_type:  DumpSmearedMCParticles
+      
+      OutputCategory: "DumpSmearedMCParticles"
+      InputParticles: "smear"
+      
+    } # dumpsmearedmcparticles
+    
+  } # analyzers
+  
+  
+  reco: [ selector, smear ]
+  dumpers: [ output ]
+  stream: [ dumpmcparticles, dumpsmearedmcparticles ]
+  
+  trigger_paths: [ reco ]
+  end_paths: [ stream, dumpers ]
+  
+} # physics
+
+
+#-------------------------------------------------------------------------------
+outputs: {
+  output: {
+    module_type: RootOutput
+    
+    fileName: "%ifb_%tc_%p.root"
+    
+  } # output
+} # outputs
+
+#-------------------------------------------------------------------------------

@@ -351,7 +351,7 @@ namespace bdm {
 #endif // USE_FHICLCPP_VALIDATION
     
     
-    
+  protected:
     //
     // It is important to remember to create the generator with a reference to
     // the engine rather than the pointer, or else CLHEP will grab ownership;

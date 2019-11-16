@@ -50,6 +50,24 @@ namespace {
         if ((value >= min) && (value <= max)) return value;
       } // while
     }
+    
+  /// Returns a random value distributed according to a Gaussian distribution
+  /// with specified `mean` and `sigma`. The deviation from `mean` must be
+  /// contained within `minCapSigma` and `maxCapSigma` times the standard
+  /// deviation `sigma`, _and_ the value must be larger than `min`.
+  /// The value is extracted over and over until these requirements are
+  /// satisfied.
+  double truncatedCappedGaus(
+    CLHEP::RandGauss& gaus,
+    double mean, double sigma, double minCapSigma, double maxCapSigma, double min
+    )
+    {
+      while (true) {
+        double const nSigmas = cappedGaus(gaus, minCapSigma, maxCapSigma);
+        double const value = mean + sigma * nSigmas;
+        if (value >= min) return value;        
+      } // while     
+    } // cappedEnergyGaus()
   
   
   geo::Vector_t smearDirection
@@ -212,7 +230,7 @@ bdm::SmearedReconstructionAlg::reconstruct
     
     double const energy = particle->E();
     double const mass = particle->Mass();
-    double const modulusP = particle->P();
+    double const p = particle->P();
     
     //--------------------------------------------------------------------------
     
@@ -221,15 +239,15 @@ bdm::SmearedReconstructionAlg::reconstruct
     
     // Smear the energy
     double thisESmearing = 0.0;
-    if ( modulusP > recoParams.fEnergySmearingLowEDef ) {
+    if ( p > recoParams.fEnergySmearingLowEDef ) {
       thisESmearing = std::sqrt( sqr( recoParams.fEnergySmearingConstant ) 
         + sqr( recoParams.fEnergySmearingCoeffSqrtE )/energy );
     } else {
       thisESmearing = recoParams.fLowEnergySmearingConstant;
     }
-    double smearedEnergy = energy *
-      std::max( mass, 1.0 + thisESmearing * cappedGaus(rndGaus, -3.0, 3.0) );
-
+  //  double smearedEnergy = std::max( mass, energy * (1.0 + thisESmearing * cappedGaus(rndGaus, -3.0, 3.0) ));
+    double smearedEnergy = truncatedCappedGaus(rndGaus, energy, thisESmearing, -3.0, 3.0, mass);
+      
     double smearedKEnergy = smearedEnergy - mass;
     bCouldReconstruct &= smearedKEnergy > recoParams.fKEThreshold;
     // std::cout << " => passed detection threshold (" << smearedKEnergy << " vs. " << recoParams.fKEThreshold << ")? " << bCouldReconstruct << std::endl;
@@ -247,10 +265,15 @@ bdm::SmearedReconstructionAlg::reconstruct
       smearedMomentum = smearDirection(momentum, dtheta, phi);
     } // if momentum smearing
     
+    double smearedP = std::sqrt( sqr( smearedEnergy ) - sqr( mass ) );
+    smearedMomentum *= smearedP / p;
+    // std::cout << "PDGCode: " << particle->PdgCode() << ", Energy: " << energy << ", SmearedEnergy: " << smearedEnergy 
+    //           << ", Momentum: " << p << ", SmearedMomentum: " << smearedP << std::endl;
+    
     //--------------------------------------------------------------------------
     reconstructed.emplace_back(
       particle->PdgCode(), // id
-      momentum,
+      smearedMomentum,
       smearedEnergy,
       time,
       startPosition,

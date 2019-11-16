@@ -1,0 +1,69 @@
+#-------------------------------------------------------------------------------
+process_name: NCFilter
+
+#-------------------------------------------------------------------------------
+# no source specified; use -s option from command line
+
+services: {
+  
+  message: {
+  #   debugModules: [ "*" ]
+    destinations: {
+      
+      # grab all the "DumpSmearedMCParticles" messages
+      # and put them in DumpSmearedMCParticles.log
+      
+      LogStandardOut: {
+        categories: {
+          DumpMCParticles:        { limit: 0 }
+          DumpSmearedMCParticles: { limit: 0 }
+          default:                { limit: -1 }
+        }
+        threshold: "INFO"
+        type: "cout"
+      } # LogStandardOut
+      
+    } # destinations
+  } # message
+    
+} # services
+
+
+#-------------------------------------------------------------------------------
+physics: {
+  
+  filters: {
+  
+    ncfilter: {
+      module_type: FilterGENIELeptonType
+      module_label: "NCFilter"
+      
+      MCTruthLabel: generator
+      LeptonPdgCode: [ -12, 12, -14, 14 ]
+      
+    } # ncfilter
+    
+    
+  } # filters
+  
+  
+  
+  reco: [ ncfilter ]
+  outputlist: [ output ]
+  trigger_paths: [ reco ]
+  end_paths: [ outputlist ]
+  
+} # physics
+
+
+#-------------------------------------------------------------------------------
+outputs: {
+  output: {
+    module_type: RootOutput
+    SelectEvents: [reco]
+    fileName: "%ifb_%tc_%p.root"
+    
+  } # output
+} # outputs
+
+#-------------------------------------------------------------------------------

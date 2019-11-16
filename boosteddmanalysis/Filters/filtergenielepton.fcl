@@ -8,6 +8,12 @@ standard_select_ncinteractions: {
   
 } # standard_select_final_state
 
+standard_select_cctauinteractions: {
+
+  MCTruthLabel: generator
+  LeptonPdgCode: [ -15, 15 ] 
+
+} # standard_select_cctauinteractions
 
 ################################################################################
 

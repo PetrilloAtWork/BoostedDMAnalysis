@@ -12,6 +12,7 @@
 
 // Boosted Dark Matter libraries
 #include "boosteddmanalysis/Reconstruction/SmearedReconstructionAlg.h"
+#include "boosteddmanalysis/Reconstruction/SmearedReconstructionTableAlg.h"
 #include "boosteddmanalysis/DataObjects/SmearedMCParticle.h"
 
 // LArSoft libraries
@@ -140,9 +141,12 @@ bdm::SmearedReconstruction::SmearedReconstruction(Parameters const& config)
 bdm::SmearedReconstruction::SmearedReconstruction
   (fhicl::ParameterSet const& pset)
   : fParticleTag(pset.get<art::InputTag>("particles"))
-  , fSmearAlg(std::make_unique<bdm::SmearedReconstructionAlg>
+  , fSmearAlg(pset.get<bool>("useTable", false)
+    ? std::make_unique<bdm::SmearedReconstructionTableAlg>
       (pset.get<fhicl::ParameterSet>("reconstruction"))
-      )
+    : std::make_unique<bdm::SmearedReconstructionAlg>
+      (pset.get<fhicl::ParameterSet>("reconstruction"))
+    )
 #endif // USE_FHICLCPP_VALIDATION
 {
   

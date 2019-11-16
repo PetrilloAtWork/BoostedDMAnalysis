@@ -1,0 +1,78 @@
+#-------------------------------------------------------------------------------
+process_name: CCTauHadronicFilter
+
+#-------------------------------------------------------------------------------
+# no source specified; use -s option from command line
+
+services: {
+  
+  message: {
+  #   debugModules: [ "*" ]
+    destinations: {
+      
+      # grab all the "DumpSmearedMCParticles" messages
+      # and put them in DumpSmearedMCParticles.log
+      
+      LogStandardOut: {
+        categories: {
+          DumpMCParticles:        { limit: 0 }
+          DumpSmearedMCParticles: { limit: 0 }
+          default:                { limit: -1 }
+        }
+        threshold: "INFO"
+        type: "cout"
+      } # LogStandardOut
+      
+    } # destinations
+  } # message
+    
+} # services
+
+
+#-------------------------------------------------------------------------------
+physics: {
+  
+  filters: {
+  
+    cctaufilter: {
+      module_type: FilterGENIELeptonType
+      module_label: "CCTauFilter"
+      
+      MCTruthLabel: generator
+      LeptonPdgCode: [ -15, 15 ]
+      
+    } # cctaufilter
+    
+    tauhadronicfilter: {
+
+      module_type: FilterTauDecayType
+      module_label: "CCTauHadronicFilter"
+
+      MCTruthLabel: generator
+      VetoMode: true
+      SpecifiedParticlePdgCode: [ -11, 11, -13, 13 ]
+    }
+    
+  } # filters
+  
+  
+  
+  reco: [ cctaufilter, tauhadronicfilter ]
+  outputlist: [ output ]
+  trigger_paths: [ reco ]
+  end_paths: [ outputlist ]
+  
+} # physics
+
+
+#-------------------------------------------------------------------------------
+outputs: {
+  output: {
+    module_type: RootOutput
+    SelectEvents: [reco]
+    fileName: "%ifb_%tc_%p.root"
+    
+  } # output
+} # outputs
+
+#-------------------------------------------------------------------------------
